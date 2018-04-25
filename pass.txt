@@ -1,0 +1,21 @@
+﻿InTimeProject2018
+Shir123456
+
+# OAuth Business Key = "InTimeKey"
+# Client ID:
+753232535471-6g5gaeprojdr7kc27i1ihhgeeli7k514.apps.googleusercontent.com
+# Client secret:
+bPdiYFXKclLzAPzS7B9HowbH
+
+4/AACeKIjnXEpPX48uzsxK6_B_cEl3Uv5eqhKbLYFDS6Ol7Qx_2CZBWo4
+
+4/AAADCzFvJMmyIQ1hkm-eZKZs7Uu0sxrzwFUmOnS_M_s7Yo01iO3alEM
+
+# OAuth Client Key = "InTimeClientKey"
+# Client ID:
+753232535471-f7j7pl2jo253ek2utra19nhmlae78tnc.apps.googleusercontent.com
+# Client secret:
+Dux1GgbUZMn6ErExcM-eetlg
+
+API Key: 
+AIzaSyDmamUL7tg84jsAf3M50BucmMMpGLuV9rY
