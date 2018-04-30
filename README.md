@@ -13,7 +13,7 @@ now open a browser with http://localhost:8080 and you should get "Please send PO
 it says the server works fine.
 
 
-*Prevent conflicts:*
+*Prevent conflicts:* <br/>
 git stash <br/>
 git pull <br/>
 git stash apply <br/>
