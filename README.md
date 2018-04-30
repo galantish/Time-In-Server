@@ -14,10 +14,10 @@ it says the server works fine.
 
 
 *Prevent conflicts:*
-git stash
-git pull
-git stash apply
-
-git add 
-git commit -m ""
-git push origin master
+git stash <br/>
+git pull <br/>
+git stash apply <br/>
+<br/>
+git add >filenames<    <br/> 
+git commit -m "description" <br/>
+git push origin master <br/>
