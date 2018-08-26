@@ -15,6 +15,20 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Global routes
+app.get('/tiempo', (req, res) => {
+    const {Wit, log} = require('node-wit');
+
+    const client = new Wit({
+        accessToken: 'LLXW2VZK4DD4FSGLDRSEK36XOED6KCZ2',
+        logger: new log.Logger(log.DEBUG) // optional
+    });
+    client.message(req.query.query, {}).then( function(result) {
+        console.log(JSON.stringify(result));
+        JsonResponse.sendResponse(res, result);
+    });
+});
+
+
 app.get('/', (req, res) => {
     JsonResponse.sendResponse(res, { error: { message: "Please send POST request"} });
 });
