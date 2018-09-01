@@ -4,6 +4,8 @@ const TimeUtil = require('./timeUtil')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const Moment = require('moment');
+const MongoClient = require('mongodb').MongoClient
+
 
 
 // Constants
@@ -11,61 +13,83 @@ const PORT = 8080
 const HOST = '0.0.0.0'
 
 const app = express()
-app.use(cors());
-app.use(bodyParser.json());
+// Connection URL
+const url = 'mongodb+srv://TimeIn:Aa123456@timein-hptkt.mongodb.net/';
+var db;
 
-// Global routes
-app.get('/tiempo', (req, res) => {
-    const {Wit, log} = require('node-wit');
+MongoClient.connect(url, (err, client) => {
+    if (err) return console.log(err)
+    db = client.db('TimeIn') // whatever your database name is
+    app.use(cors());
+    app.use(bodyParser.json());
 
-    const client = new Wit({
-        accessToken: 'LLXW2VZK4DD4FSGLDRSEK36XOED6KCZ2',
-        logger: new log.Logger(log.DEBUG) // optional
+    app.get('/Businesses/:name', (req, res) => {
+        db.collection('Business').find({ 'name': req.params.name }).toArray((err, result) => {
+            if (err) return console.log(err)
+            // renders index.ejs
+            res.json({ businesses: result });
+        })
     });
-    client.message(req.query.query, {}).then( function(result) {
-        console.log(JSON.stringify(result));
-        JsonResponse.sendResponse(res, result);
+
+    app.post('/Businesses', (req, res) => {
+        // Get the documents collection
+        const collection = db.collection('Business');
+        // Insert some documents
+        collection.insertOne(req.body, function (err, result) {
+            res.json(result);
+        });
     });
-});
+
+    // Global routes
+    app.get('/tiempo', (req, res) => {
+        const { Wit, log } = require('node-wit');
+
+        const client = new Wit({
+            accessToken: 'LLXW2VZK4DD4FSGLDRSEK36XOED6KCZ2',
+            logger: new log.Logger(log.DEBUG) // optional
+        });
+        client.message(req.query.query, {}).then(function (result) {
+            console.log(JSON.stringify(result));
+            JsonResponse.sendResponse(res, result);
+        });
+    });
 
 
-app.get('/', (req, res) => {
-    JsonResponse.sendResponse(res, { error: { message: "Please send POST request"} });
-});
+    app.get('/', (req, res) => {
+        JsonResponse.sendResponse(res, { error: { message: "Please send POST request" } });
+    });
 
-app.post('/', (req, res) => {
+    app.post('/', (req, res) => {
 
-    const start = Moment();
-    const googleCal = require('./google-calendar-adapter').module
-    const { userBusy, startingAt, gapInMinutes, timeRequested } = req.body
+        const start = Moment();
+        const googleCal = require('./google-calendar-adapter').module
+        const { userBusy, startingAt, gapInMinutes, timeRequested } = req.body
 
-    let newList = [];
-    userBusy.map(item => {
-        newList.push({ start: item.start.dateTime, end: item.end.dateTime })
-    })
-    const formatedUserBusy = newList;
+        let newList = [];
+        userBusy.map(item => {
+            newList.push({ start: item.start.dateTime, end: item.end.dateTime })
+        })
+        const formatedUserBusy = newList;
 
-    let calendar = {};
-    googleCal.getEvents().then(list => {
-        const untilWhen = Moment.duration(1, "day");
-        const concatedList = list.concat(formatedUserBusy)
-        const busyList = concatedList.sort((a, b) => {
-            const momentA = Moment(a.start)
-            const momentB = Moment(b.start)
-            return momentA.diff(momentB);
+        let calendar = {};
+        googleCal.getEvents().then(list => {
+            const untilWhen = Moment.duration(1, "day");
+            const concatedList = list.concat(formatedUserBusy)
+            const busyList = concatedList.sort((a, b) => {
+                const momentA = Moment(a.start)
+                const momentB = Moment(b.start)
+                return momentA.diff(momentB);
+            })
+
+            const result = TimeUtil.getAvailableTimeSlot(busyList, timeRequested, untilWhen, gapInMinutes, startingAt);
+
+            JsonResponse.sendResponse(res, result);
+            const end = Moment();
+            console.log("Takes " + end.diff(start))
         })
 
-        const result = TimeUtil.getAvailableTimeSlot(busyList, timeRequested, untilWhen, gapInMinutes, startingAt);
+    });
 
-        JsonResponse.sendResponse(res, result);
-        const end = Moment();
-        console.log("Takes " + end.diff(start))
-    })
-
-});
-
-app.listen(PORT, HOST)
-console.log(`Running on http://${HOST}:${PORT}`)
-
-
-
+    app.listen(PORT, HOST)
+    console.log(`Running on http://${HOST}:${PORT}`)
+})
