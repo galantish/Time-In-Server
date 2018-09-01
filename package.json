@@ -17,6 +17,7 @@
     "moment": "^2.22.1",
     "moment-range": "^4.0.0",
     "mongodb": "^3.1.4",
-    "node-wit": "^5.0.0"
+    "node-wit": "^5.0.0",
+    "nodemon": "^1.18.4"
   }
 }

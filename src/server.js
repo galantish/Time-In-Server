@@ -49,11 +49,21 @@ MongoClient.connect(url, (err, client) => {
             logger: new log.Logger(log.DEBUG) // optional
         });
         client.message(req.query.query, {}).then(function (result) {
-            console.log(JSON.stringify(result));
-            JsonResponse.sendResponse(res, result);
+            if(result.entities.intent && result.entities.service && result.entities.business && result.entities.datetime){
+                var date = new Date(Date.parse(result.entities.datetime[0].value));
+                response = {
+                    intent: result.entities.intent[0].value,
+                    service: result.entities.service[0].value,
+                    business: result.entities.business[0].value,
+                    date: date,
+                    text: `Are you sure you want to ${result.entities.intent[0].value} ${result.entities.service[0].value} at ${result.entities.business[0].value} for ${date.getDay()}/${date.getMonth()} ${date.getHours}:${date.getMinutes}?`
+                }
+                JsonResponse.sendResponse(res, response)
+            } else {
+                JsonResponse.sendResponse(res, result);
+            }
         });
     });
-
 
     app.get('/', (req, res) => {
         JsonResponse.sendResponse(res, { error: { message: "Please send POST request" } });
