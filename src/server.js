@@ -56,7 +56,7 @@ MongoClient.connect(url, (err, client) => {
                     service: result.entities.service[0].value,
                     business: result.entities.business[0].value,
                     date: date,
-                    text: `Are you sure you want to ${result.entities.intent[0].value} ${result.entities.service[0].value} at ${result.entities.business[0].value} for ${date.getMonth()+1}/${date.getDate()}?`
+                    text: `Are you sure you want to ${result.entities.intent[0].value} ${result.entities.service[0].value} at ${result.entities.business[0].value} for ${date.getDate()}/${date.getMonth()+1}?`
                 }
                 JsonResponse.sendResponse(res, response)
             } else {
